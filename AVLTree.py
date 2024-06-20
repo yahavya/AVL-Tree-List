@@ -69,7 +69,7 @@ class AVLTree(object):
         """
 
         def searchRec(node, key):
-            if node.key == None:
+            if node.is_real_node:
                 return None
             elif node.key > key:
                 return searchRec(node.left, key)
@@ -111,13 +111,22 @@ class AVLTree(object):
 	@returns: a sorted list according to key of touples (key, value) representing the data structure
 	"""
 
-    def avl_to_array(self): #receives tree
+    def avl_to_array(self): 
+        """helper function: gets a node and lst, recursively fill the list with tuples of key,value sorted by the key
+        @type node: AVLNode, lst: list 
+        @base case: reached virtual node 
+        @returns: doesn't return anything. just filling the list
+        """
+        def avl_to_arrayRec(node, lst):
+            if node.is_real_node():
+                return lst
+            avl_to_arrayRec(node.left, lst)
+            lst.append((node.key, node.value))
+            avl_to_arrayRec(node.right, lst)
+
         sortedArray = []
-        if self.root i
-
-
-
-        return None
+        avl_to_arrayRec(self.root, sortedArray)
+        return sortedArray
 
     """returns the number of items in dictionary 
 
