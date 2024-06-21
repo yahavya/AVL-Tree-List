@@ -69,7 +69,7 @@ class AVLTree(object):
         """
 
         def searchRec(node, key):
-            if node.is_real_node:
+            if not node.is_real_node():
                 return None
             elif node.key > key:
                 return searchRec(node.left, key)
@@ -78,7 +78,9 @@ class AVLTree(object):
             else:
                 return node
 
-        return searchRec(self.root, key)
+        if self.root==None:                            #deal with empty tree
+            return None
+        return searchRec(self.root, key)               
 
     """inserts a new node into the dictionary with corresponding key and value
 
@@ -92,6 +94,35 @@ class AVLTree(object):
 	"""
 
     def insert(self, key, val):
+        new_node=AVLNode(key,val)
+        new_node.size=1
+        node=self.root
+        if node==None:
+            self.root=new_node
+            vir_node=AVLNode(None,None)
+            vir_node.size=0
+            self.root.left=vir_node
+            self.root.right=vir_node
+        
+        else:      
+            while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
+                if node.key<key:
+                    node=node.right
+                elif node.key>key:
+                    node=node.left
+            if node.key>key and (not node.left.is_real_node()):
+                virtual_node=node.left
+                node.left=new_node
+                new_node.left=virtual_node
+                new_node.right=virtual_node
+                new_node.parent=node
+            elif node.key<key and (not node.right.is_real_node()):
+                virtual_node=node.right
+                node.right=new_node
+                new_node.left=virtual_node
+                new_node.right=virtual_node
+                new_node.parent=node
+    
         return -1
 
     """deletes node from the dictionary
@@ -119,10 +150,10 @@ class AVLTree(object):
         """
 
         def avl_to_arrayRec(node, lst):
-            if node.is_real_node():
+            if not node.is_real_node():
                 return lst
             avl_to_arrayRec(node.left, lst)
-            lst.append((node.key, node.value))
+            lst.append((node.key,node.value))
             avl_to_arrayRec(node.right, lst)
 
         sortedArray = []
@@ -170,7 +201,23 @@ class AVLTree(object):
 	"""
 
     def select(self, i):
-        return None
+        def selectRec(node,i):
+            n=node.left.size                           #assuming size of a virtual node is 0         
+            #print(n)
+            if n>=i:                                    #means the left son has at least i nodes
+                return selectRec(node.left, i)         #go search the i'th in the left branch
+            
+            elif n+1==i:                               #means this node if the i'th, so return it                             
+                return node
+            else:                                      #means i>n+1
+                return selectRec(node.right, i-n-1)    #return the i-n-1 item in the right branch which is the i'th in the tree
+        
+        
+        if self.root==None:                            #deal with empty tree
+            return None
+        
+        node_temp=selectRec(self.root,i)
+        return node_temp
 
     """finds the node with the largest value in a specified range of keys
 
