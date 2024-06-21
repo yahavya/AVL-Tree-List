@@ -21,6 +21,8 @@ def test_rank():
     avl_tree.root.right.right = AVLNode(8, "Value 8")
     avl_tree.root.right.right.size = 1
 
+    print("this is root", avl_tree.get_root().key)
+
     # Test the rank function
     print(avl_tree.rank(avl_tree.root))
     # assert avl_tree.rank(avl_tree.root) == 4
