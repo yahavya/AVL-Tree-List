@@ -111,12 +111,13 @@ class AVLTree(object):
 	@returns: a sorted list according to key of touples (key, value) representing the data structure
 	"""
 
-    def avl_to_array(self): 
+    def avl_to_array(self):
         """helper function: gets a node and lst, recursively fill the list with tuples of key,value sorted by the key
-        @type node: AVLNode, lst: list 
-        @base case: reached virtual node 
+        @type node: AVLNode, lst: list
+        @base case: reached virtual node
         @returns: doesn't return anything. just filling the list
         """
+
         def avl_to_arrayRec(node, lst):
             if node.is_real_node():
                 return lst
@@ -146,8 +147,18 @@ class AVLTree(object):
 	@returns: the rank of node in self
 	"""
 
+    # If we go up to the right, don't do anything
     def rank(self, node):
-        return -1
+        counter = 0
+        curr = node
+        while curr.parent != None:  # Keep going up to the root
+            if curr.parent.key < curr.key:
+                counter += (
+                    1 + curr.parent.left.size
+                )  # If we go up to the left, add parent's left sub-tree + 1 to the counter
+            curr = curr.parent
+        counter += 1 + curr.left.size
+        return counter
 
     """finds the i'th smallest item (according to keys) in the dictionary
 
