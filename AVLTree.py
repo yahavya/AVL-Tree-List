@@ -260,6 +260,8 @@ class AVLTree(object):
 	"""
 
     def size(self):
+        if self.root == None:
+            return 0
         return self.root.size
 
     """compute the rank of node in the dictionary
