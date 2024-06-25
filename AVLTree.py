@@ -36,6 +36,10 @@ class AVLNode(object):
         if self.value == None:
             return False
         return True
+    def is_virtual_node(self):
+        if self.value == None:
+            return True
+        return False
 
 
 """
@@ -69,7 +73,7 @@ class AVLTree(object):
         """
 
         def searchRec(node, key):
-            if not node.is_real_node():
+            if node.is_virtual_node():
                 return None
             elif node.key > key:
                 return searchRec(node.left, key)
@@ -94,36 +98,125 @@ class AVLTree(object):
 	"""
 
     def insert(self, key, val):
-        new_node=AVLNode(key,val)
-        new_node.size=1
-        node=self.root
-        if node==None:
-            self.root=new_node
-            vir_node=AVLNode(None,None)
-            vir_node.size=0
-            self.root.left=vir_node
-            self.root.right=vir_node
+
+        def naive_insert(self, key, val):
+            newNode=AVLNode(key,val)
+            newNode.size=1
+            newNode.height = 0
+            if self.root == None:
+                virNode = AVLNode(None, None)
+                self.root = newNode
+                newNode.left = virNode
+                newNode.right = virNode
+                newNode.parent = None
+                return newNode
+            else:
+                node = self.root
+                while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
+                    if node.key<key:
+                        node=node.right
+                    elif node.key>key:
+                        node=node.left
+                if node.key>key and (node.left.is_virtual_node()):
+                    virtualNode = node.left
+                    node.left = newNode
+                    newNode.left = virtualNode
+                    newNode.right = virtualNode 
+                    newNode.parent = node
+                elif node.key<key and (node.right.is_virtual_node()):
+                    virtual_node=node.right
+                    node.right=newNode
+                    newNode.left=virtual_node
+                    newNode.right=virtual_node
+                    newNode.parent=node
+
+                return node
+
+
+        def update_height(node): #expects parent of new node at first call
+            new_height = 1 + max(node.left.height, node.right.height)
+            old_height = node.height
+            node.height = new_height
+            if node.parent != None and new_height != old_height: #reached root
+                update_height(node.parent)
+            return
         
-        else:      
-            while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
-                if node.key<key:
-                    node=node.right
-                elif node.key>key:
-                    node=node.left
-            if node.key>key and (not node.left.is_real_node()):
-                virtual_node=node.left
-                node.left=new_node
-                new_node.left=virtual_node
-                new_node.right=virtual_node
-                new_node.parent=node
-            elif node.key<key and (not node.right.is_real_node()):
-                virtual_node=node.right
-                node.right=new_node
-                new_node.left=virtual_node
-                new_node.right=virtual_node
-                new_node.parent=node
-    
-        return -1
+        def update_size(node): #expects parent of new node at first call
+            node.size = node.size + 1
+            if node.parent != None : #reached root
+                update_size(node.parent)
+            return
+        
+        def update_successor(node):
+            if node.parent != None:
+                # go up until first turn left to find predecessor
+                # when we reach the predecessor, do predecessor.successor = node
+                # node.successor = previous successor (need to maintain a temp variable)
+                pass
+        
+        
+        def find_criminal(node):
+
+            if node != None:
+                return node
+            # node is real
+            BF = node.left.height - node.right.height
+            if BF not in (-1,1,0):
+                return node
+            return find_criminal(node.parent)
+            
+
+        def balance(self, node):
+            if node.is_virtual_node():
+                return
+            #node is real
+            BF = node.left.height - node.right.height
+            if BF == 2:
+                leftBF = node.left.left.height - node.left.right.height
+                if leftBF == 1:
+                    rotate_right(self, node)
+
+
+                elif leftBF == -1:
+                    pass
+
+            elif BF == -2:
+                rightBF = node.right.left.height - node.right.right.height
+                if rightBF == 1:
+                    pass
+                
+                elif rightBF == -1:
+                    pass
+        
+        def rotate_right(self, node):
+            B = node
+            A = B.left
+            if self.root == B: #this means B is the root
+                self.root = A
+                
+            else:
+                if B == B.parent.left: 
+                    B.parent.left = A
+                elif B == B.parent.right:
+                    B.parent.right = A
+            B.left = A.right
+            A.right = B
+            B.size = B.right.size + B.left.size + 1 #update size for B
+            A.size = A.right.size + A.left.size + 1 #update size for A
+            update_height(B)
+            
+            return
+        newNode = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix
+        
+        update_height(newNode)
+        update_size(newNode)
+        #update_successor(newNode)
+        #criminalNode = find_criminal(newNode)
+
+        #balance(self, criminalNode)
+
+
+
 
     """deletes node from the dictionary
 
@@ -150,7 +243,7 @@ class AVLTree(object):
         """
 
         def avl_to_arrayRec(node, lst):
-            if not node.is_real_node():
+            if node.is_virtual_node():
                 return lst
             avl_to_arrayRec(node.left, lst)
             lst.append((node.key,node.value))
