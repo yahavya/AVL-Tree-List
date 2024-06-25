@@ -1,0 +1,23 @@
+from AVLTree import AVLTree, AVLNode
+
+t=AVLTree()
+t.insert(3,"3")
+t.insert(4,"4")
+t.insert(1,"1")
+t.insert(2,"2")
+t.insert(0,"0")
+t.insert(5,"5")
+t.insert(7,"7")
+t.insert(6,"6")
+
+def print_way(n,s):
+    if s==0:
+        dir1= lambda node : node.left
+        dir2= lambda node :node.right
+    if s==1:
+        dir1= lambda node : node.right
+        dir2= lambda node :node.left
+    while(n!=None):
+        print(n.value)
+        n=dir1(n)
+print_way(t.root,1)
