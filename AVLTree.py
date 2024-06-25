@@ -157,7 +157,7 @@ class AVLTree(object):
         
         def find_criminal(node):
 
-            if node != None:
+            if node == None:
                 return node
             # node is real
             BF = node.left.height - node.right.height
@@ -167,7 +167,7 @@ class AVLTree(object):
             
 
         def balance(self, node):
-            if node.is_virtual_node():
+            if node == None:
                 return
             #node is real
             BF = node.left.height - node.right.height
@@ -176,7 +176,6 @@ class AVLTree(object):
                 if leftBF == 1:
                     rotate_right(self, node)
 
-
                 elif leftBF == -1:
                     pass
 
@@ -184,36 +183,69 @@ class AVLTree(object):
                 rightBF = node.right.left.height - node.right.right.height
                 if rightBF == 1:
                     pass
-                
                 elif rightBF == -1:
-                    pass
+                    rotate_left(self, node)
+
         
         def rotate_right(self, node):
             B = node
             A = B.left
+
             if self.root == B: #this means B is the root
                 self.root = A
+                A.parent = None
+                
+            else:
+                if B.key == B.parent.left.key:
+                    B.parent.left = A
+                    A.parent = B.parent
+                elif B.key == B.parent.right.key:
+                    B.parent.right = A
+                    A.parent = B.parent
+            B.left = A.right
+            A.right.parent = B
+            A.right = B
+            B.parent = A
+            B.size = B.right.size + B.left.size + 1 #update size for B
+            A.size = A.right.size + A.left.size + 1 #update size for A
+            update_height(B)
+            return
+        
+        
+        def rotate_left(self, node):
+            B = node
+            A = B.right
+            if self.root == B: #this means B is the root
+                self.root = A
+                A.parent = None
                 
             else:
                 if B == B.parent.left: 
                     B.parent.left = A
+                    A.parent = B.parent
                 elif B == B.parent.right:
                     B.parent.right = A
-            B.left = A.right
-            A.right = B
+                    A.parent = B.parent
+            B.right = A.left
+            A.left.parent = B
+            A.left = B
+            B.parent = A
             B.size = B.right.size + B.left.size + 1 #update size for B
             A.size = A.right.size + A.left.size + 1 #update size for A
             update_height(B)
-            
             return
-        newNode = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix
+        ######## outside of functions
         
+        newNode = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix
         update_height(newNode)
         update_size(newNode)
         #update_successor(newNode)
-        #criminalNode = find_criminal(newNode)
+        criminalNode = find_criminal(newNode)
+        if criminalNode == None:
+            return 0
+        print("THIS IS THE CRIMINAL NODE", criminalNode.key)
 
-        #balance(self, criminalNode)
+        balance(self, criminalNode)
 
 
 
