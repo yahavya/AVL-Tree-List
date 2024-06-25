@@ -175,16 +175,22 @@ class AVLTree(object):
                 leftBF = node.left.left.height - node.left.right.height
                 if leftBF == 1:
                     rotate_right(self, node)
+                    return 1
 
                 elif leftBF == -1:
-                    pass
+                    rotate_left(self, node.left)
+                    rotate_right(self, node)
+                    return 2
 
             elif BF == -2:
                 rightBF = node.right.left.height - node.right.right.height
                 if rightBF == 1:
-                    pass
+                    rotate_right(self, node.right)
+                    rotate_left(self, node)
+                    return 2
                 elif rightBF == -1:
                     rotate_left(self, node)
+                    return 1
 
         
         def rotate_right(self, node):
@@ -241,12 +247,9 @@ class AVLTree(object):
         update_size(newNode)
         #update_successor(newNode)
         criminalNode = find_criminal(newNode)
-        if criminalNode == None:
-            return 0
-        print("THIS IS THE CRIMINAL NODE", criminalNode.key)
-
-        balance(self, criminalNode)
-
+        if criminalNode != None:
+            return balance(self, criminalNode)
+        return 0
 
 
 
