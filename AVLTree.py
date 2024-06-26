@@ -146,7 +146,7 @@ class AVLTree(object):
         """update_height receives a pointer to the newly added node
            updates all heights in its path to the root.
         """
-        def update_height(node): 
+        def update_height(node): #change to iterative, while height is different between old and new height
             new_height = 1 + max(node.left.height, node.right.height) #calculate new height based on children heights
             #old_height = node.height
             node.height = new_height
@@ -220,6 +220,7 @@ class AVLTree(object):
                 elif rightBF == -1: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
                     rotate_left(self, node)
                     return 1
+            
 
         """
         rotate_right receives the node B in the rotation sequence.
@@ -247,7 +248,7 @@ class AVLTree(object):
             B.parent = A
             B.size = B.right.size + B.left.size + 1 #update size for B
             A.size = A.right.size + A.left.size + 1 #update size for A
-            update_height(B)
+            update_height(B) #change to update height only for B and A manually
             return
         
         """
