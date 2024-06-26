@@ -138,11 +138,11 @@ class AVLTree(object):
                     newNode.right=virtual_node
                     newNode.parent=node
 
-                height_change = update_height(node)
+                height_change = update_height(node) #calculate change in height due to adding the node
                 update_size(newNode)
                 update_successor(newNode)
 
-                return node, height_change
+                return node, height_change #return a tuple - pointer to the new node, and the change in height due to adding the node
             
         """update_height receives a pointer to the newly added node
            updates all heights in its path to the root.
@@ -288,7 +288,7 @@ class AVLTree(object):
         
         ######## OUTSIDE OF HELPER FUNCTIONS, BACK IN INSERT FUNCTION ########
         
-        newNode, height_change = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix
+        newNode, height_change = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix, and the change in height due to adding the node
         update_successor(newNode) #update successors after inserting new node.
         criminalNode = find_criminal(newNode) #find criminal node in tree if exists
         if criminalNode != None: #if criminal node is found, rebalance tree
