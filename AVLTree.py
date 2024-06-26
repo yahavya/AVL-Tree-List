@@ -276,7 +276,7 @@ class AVLTree(object):
             B.parent = A
             B.size = B.right.size + B.left.size + 1 #update size for B
             A.size = A.right.size + A.left.size + 1 #update size for A
-            update_height(B)
+            update_height(B) #update height for B and potentially all nodes above it
             return
         
         ######## OUTSIDE OF HELPER FUNCTIONS, BACK IN INSERT FUNCTION ########
