@@ -154,6 +154,7 @@ def check_size(node):
     return size 
             
 t.insert(2, "")
+#t.delete(t.search(5))
 check_height(t.root)
 check_size(t.root)
 print(t.root.height)
@@ -161,6 +162,8 @@ print(t.root.size)
 printree(t)
 print("left side size", t.root.left.size)
 print("right side size",t.root.right.size)
+printree(t)
+
 
 
 #printree(t)
