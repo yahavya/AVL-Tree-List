@@ -222,7 +222,9 @@ class AVLTree(object):
                     return 1
 
         """
-        rotate_right receives the node 
+        rotate_right receives the node B in the rotation sequence.
+        after rotation: B is right child of A, A is parent of B, A's right child becomes B's left child. 
+        A's left child does not change, B's left child does not change
         """
         def rotate_right(self, node):
             B = node
@@ -248,7 +250,12 @@ class AVLTree(object):
             update_height(B)
             return
         
-        
+        """
+        symmetrical rotation:
+        rotate_left receives the node B in the rotation sequence.
+        after rotation: B is left child of A, A is parent of B, A's left child becomes B's right child. 
+        A's right child does not change, B's right child does not change
+        """
         def rotate_left(self, node):
             B = node
             A = B.right
@@ -271,15 +278,15 @@ class AVLTree(object):
             A.size = A.right.size + A.left.size + 1 #update size for A
             update_height(B)
             return
-        ######## outside of functions
+        
+        ######## OUTSIDE OF HELPER FUNCTIONS, BACK IN INSERT FUNCTION ########
         
         newNode = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix
-    
-        #update_successor(newNode)
-        criminalNode = find_criminal(newNode)
-        if criminalNode != None:
+        update_successor(newNode) #update successors after inserting new node.
+        criminalNode = find_criminal(newNode) #find criminal node in tree if exists
+        if criminalNode != None: #if criminal node is found, rebalance tree
             return balance(self, criminalNode)
-        return 0
+        return 0 #else return 0, no rebalancing needed
 
 
 
