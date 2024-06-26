@@ -86,10 +86,14 @@ def rightspace(row):
 
 
 t=AVLTree()
-for i in range(10):
-    t.insert(i,"")
+t.insert(10,"")
+t.insert(90,"")
+t.insert(35,"")
+# t.insert(10,"")
+# t.insert(10,"")
+# t.insert(10,"")
 printree(t)
-a=t.search(7)
+a=t.search(35)
 t.delete(a)
-t.delete(t.search(3))
+#t.delete(t.search(3))
 printree(t)

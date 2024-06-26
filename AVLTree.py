@@ -290,7 +290,7 @@ class AVLTree(object):
         ######## OUTSIDE OF HELPER FUNCTIONS, BACK IN INSERT FUNCTION ########
         
         newNode, height_change = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix, and the change in height due to adding the node
-        update_successor(newNode) #update successors after inserting new node.
+        #update_successor(newNode) 
         criminalNode = find_criminal(newNode) #find criminal node in tree if exists
         if criminalNode != None: #if criminal node is found, rebalance tree
             return balance(self, criminalNode)
