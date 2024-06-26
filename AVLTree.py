@@ -110,13 +110,14 @@ class AVLTree(object):
             newNode=AVLNode(key,val)
             newNode.size=1
             newNode.height = 0
+            height_change = 0
             if self.root == None: # Check if tree is empty, and create the virtual node that we will be shared between whole tree,
                 virNode = AVLNode(None, None)
                 self.root = newNode
                 newNode.left = virNode
                 newNode.right = virNode
                 newNode.parent = None
-                return newNode
+                return newNode, height_change
             else: # Tree has nodes, traverse until finding the proper placement for node and add it as a leaf
                 node = self.root
                 while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
@@ -137,23 +138,25 @@ class AVLTree(object):
                     newNode.right=virtual_node
                     newNode.parent=node
 
-                update_height(node)
+                height_change = update_height(node)
                 update_size(newNode)
                 update_successor(newNode)
 
-                return node
+                return node, height_change
             
         """update_height receives a pointer to the newly added node
            updates all heights in its path to the root.
         """
-        def update_height(node): #change to iterative, while height is different between old and new height
-            new_height = 1 + max(node.left.height, node.right.height) #calculate new height based on children heights
-            #old_height = node.height
-            node.height = new_height
-            if node.parent != None: #and new_height != old_height: //reached root
-                update_height(node.parent)
-            return
-        
+        def update_height(node):
+            height_changed = 0
+            while node is not None:
+                new_height = 1 + max(node.left.height, node.right.height)  # Calculate new height based on children heights
+                if new_height != node.height:  # If the height has changed
+                    height_changed +=1
+                    node.height = new_height  # Update the height
+                node = node.parent  # Move to the parent node
+            return height_changed
+            
         """update_size receives a pointer to the newly added node
            updates all sizes in its path to the root.
         """
@@ -220,7 +223,10 @@ class AVLTree(object):
                 elif rightBF == -1: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
                     rotate_left(self, node)
                     return 1
-            
+            else: #balance factor is ok, and return is irrelevant
+                return -1
+                    
+
 
         """
         rotate_right receives the node B in the rotation sequence.
@@ -282,12 +288,13 @@ class AVLTree(object):
         
         ######## OUTSIDE OF HELPER FUNCTIONS, BACK IN INSERT FUNCTION ########
         
-        newNode = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix
+        newNode, height_change = naive_insert(self, key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix
         update_successor(newNode) #update successors after inserting new node.
         criminalNode = find_criminal(newNode) #find criminal node in tree if exists
         if criminalNode != None: #if criminal node is found, rebalance tree
             return balance(self, criminalNode)
-        return 0 #else return 0, no rebalancing needed
+        else: 
+            return height_change #else return 0, no rebalancing needed
 
 
 
