@@ -143,23 +143,30 @@ class AVLTree(object):
 
                 return node
             
-        """update_height receives the newly added node and updates all heights in its path to the root.
-
+        """update_height receives a pointer to the newly added node
+           updates all heights in its path to the root.
         """
-        def update_height(node): #add documentation
-            new_height = 1 + max(node.left.height, node.right.height)
+        def update_height(node): 
+            new_height = 1 + max(node.left.height, node.right.height) #calculate new height based on children heights
             #old_height = node.height
             node.height = new_height
             if node.parent != None: #and new_height != old_height: //reached root
                 update_height(node.parent)
             return
         
+        """update_size receives a pointer to the newly added node
+           updates all sizes in its path to the root.
+        """
         def update_size(node): #expects parent of new node at first call
             node.size = node.size + 1
             if node.parent != None : #reached root
                 update_size(node.parent)
             return
         
+        """update_successor receives a pointer to the newly added node
+           updates all successors in its path to the root.
+        """
+
         def update_successor(node):
             curr=node #pointer for traveling on the tree
             while curr.parent != None: #go up while you are not the root
@@ -168,51 +175,55 @@ class AVLTree(object):
                     curr.parent.successor = node
                     return
                 curr = curr.parent
-            node.successor=node.parent #if you reached the root without turning left it means that you are the minimum
+            node.successor=node.parent #if root was reached without turning left it means that you are the minimum
 
-            
-            
- 
-                    
+        """find_criminal receives a pointer to the newly added node,
+           searches for a criminal node in the tree, BF >= 1 or BF <= -1, and returns a pointer to the node.
+        """
         
         def find_criminal(node):
 
-            if node == None:
+            if node == None: #check if node is above root, meaning we reached the root
                 return node
-            # node is real
-            BF = node.left.height - node.right.height
-            if BF not in (-1,1,0):
-                return node
-            return find_criminal(node.parent)
             
-
+            BF = node.left.height - node.right.height #calculate balance factor
+            if BF not in (-1,1,0): #if BF is not 0 or 1 or -1, we have a criminal
+                return node
+            return find_criminal(node.parent) #haven't found criminal, so recursively search for a criminal
+            
+        """
+        balance receives the criminal node and rebalances the tree 
+        returns the number of rebalancing operations required to balance the tree.
+        """
         def balance(self, node):
             if node == None:
                 return
             #node is real
-            BF = node.left.height - node.right.height
-            if BF == 2:
+            BF = node.left.height - node.right.height #calculate balance factor
+            if BF == 2: #tree is left heavy
                 leftBF = node.left.left.height - node.left.right.height
-                if leftBF == 1:
+                if leftBF == 1: #left child with balance factor 1, meaning child tree is also left heavy, rotate right to fix
                     rotate_right(self, node)
                     return 1
 
-                elif leftBF == -1:
+                elif leftBF == -1: #left child with balance factor -1, meaning child tree is right heavy, rotate left then right to fix
                     rotate_left(self, node.left)
                     rotate_right(self, node)
                     return 2
 
-            elif BF == -2:
+            elif BF == -2: #tree is right heavy
                 rightBF = node.right.left.height - node.right.right.height
-                if rightBF == 1:
+                if rightBF == 1: #right child with balance factor 1, meaning child tree is left heavy, rotate right then left to fix
                     rotate_right(self, node.right)
                     rotate_left(self, node)
                     return 2
-                elif rightBF == -1:
+                elif rightBF == -1: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
                     rotate_left(self, node)
                     return 1
 
-        
+        """
+        rotate_right receives the node 
+        """
         def rotate_right(self, node):
             B = node
             A = B.left
