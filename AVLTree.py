@@ -160,12 +160,13 @@ class AVLTree(object):
         """update_size receives a pointer to the newly added node
            updates all sizes in its path to the root.
         """
-        def update_size(node): #expects parent of new node at first call
-            node.size = node.size + 1
-            if node.parent != None : #reached root
-                update_size(node.parent)
-            return
-        
+        def update_size(node):
+            curr_node = node
+
+            while curr_node:
+                curr_node.size = curr_node.left.size + curr_node.right.size + 1
+                curr_node = curr_node.parent
+                
         """update_successor receives a pointer to the newly added node
            updates all successors in its path to the root.
         """

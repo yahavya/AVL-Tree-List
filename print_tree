@@ -143,10 +143,25 @@ def check_height(node):
     if height != node.height:
         print("KEY IS", node.key, "WRONG HEIGHT IS", node.height)
     return height   
-            
 
+def check_size(node):
+    if node.is_virtual_node():
+        return 0
+    
+    size = 1 + check_size(node.left) + check_size(node.right)
+    if size != node.size:
+        print("KEY IS", node.key, "WRONG SIZE IS", node.size)
+    return size 
+            
+t.insert(2, "")
 check_height(t.root)
+check_size(t.root)
 print(t.root.height)
+print(t.root.size)
+printree(t)
+print("left side size", t.root.left.size)
+print("right side size",t.root.right.size)
+
 
 #printree(t)
 
