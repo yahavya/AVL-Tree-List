@@ -90,28 +90,85 @@ def check_size(node):
     temp=check_size(node.left)+check_size(node.right)+1
     if temp!= node.size:
         print("probelm with ", node.key,". size should be ",temp," but its ",node.size)
+    else:
+        if p:
+            print("the height of the node with key:", node.key," is",temp)
     return temp
 
-def check_height(node):
+def check_height(node, p=False):
     if node.is_virtual_node:
         return -1
     temp=max(check_size(node.left),check_size(node.right))+1
     if temp!= node.height:
         print("probelm with ", node.key,". size should be ",temp," but its ",node.height)
+    else:
+        if p:
+            print("the height of the node with key:", node.key," is",temp)
     return temp
+
+def get_successor(node):
+    dontAskWhy=node
+    if node.right.is_real_node():
+        nodi=node.right
+        while nodi.left.is_real_node():
+            nodi=nodi.left
+        return nodi
+    else:
+        while node.parent!=None:
+            if node==node.parent.left:
+                return node.parent
+            node=node.parent
+    while dontAskWhy.left.is_real_node():
+        dontAskWhy=dontAskWhy.left
+    return dontAskWhy.left
+
+def check_successor(node, p = False):
+    while node.left.is_real_node():
+        node=node.left
+    while(node.is_real_node()):
+        realSucc=get_successor(node)
+        maybeSucc=node.successor
+        if p:
+            if realSucc.is_virtual_node() and maybeSucc.is_virtual_node() :
+                print("analyzing ", node.key, ". successor should be virtual node and it is so")
+            elif (realSucc.is_virtual_node()) and (maybeSucc.is_real_node()):
+                print("analyzing ", node.key,". node successor is", maybeSucc.key, "altough it needs to be virtual")
+            elif (realSucc.is_real_node() and maybeSucc.is_virtual_node()):
+                print("analyzing ", node.key,". node successor is Virtual altough it needs to be", realSucc.key)
+            else:
+                print("analyzing ", node.key, ". successor shold be", realSucc.key," and its", maybeSucc.key)
+        if realSucc!=maybeSucc:
+
+            print("probelm with successor of ", node.key,". successor shold be", realSucc.key," but its", maybeSucc.key)
+            return
+        node=maybeSucc
+   
+
+
+
+# for i in range(0,15,3):
+#     print(i," ",100-i)
 
 
 T1=AVLTree()
-for i in range(8):
+for i in range(10):
     T1.insert(i,"")
     T1.insert(100-i,"")
-for i in range(0,8,3):
-    T1.delete(T1.search(i))
+
+for i in range(0,10,3):
+   T1.delete(T1.search(i))
+   T1.delete(T1.search(100-i))
 
 
+T2=AVLTree()
+for i in range (100):
+    T2.insert(i,"")
 
-
-check_size(T1.root)
+print("started")
 check_height(T1.root)
-printree(T1)
+check_height(T2.root)
+check_size(T1.root)
+check_size(T2.root)
+check_successor(T1.root, False)
+check_successor(T2.root)
 print("completed")

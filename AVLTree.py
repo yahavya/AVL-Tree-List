@@ -26,6 +26,7 @@ class AVLNode(object):
         self.height = -1
         self.size = 0
         self.successor = None
+        self.predeccessor = None
 
     """returns whether self is not a virtual node 
 
@@ -99,6 +100,9 @@ class AVLTree(object):
 	"""
 
     def insert(self, key, val):
+        if self.search(key)!=None:
+            raise AssertionError("Key already exists in the AVL tree.")
+           
         ######## OUTSIDE OF HELPER FUNCTIONS, BACK IN INSERT FUNCTION ########
         
         newNode, height_change = self.naive_insert(key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix, and the change in height due to adding the node
@@ -121,12 +125,16 @@ class AVLTree(object):
         newNode.size=1
         newNode.height = 0
         height_change = 0
-        if self.root == None: # Check if tree is empty, and create the virtual node that we will be shared between whole tree,
+        if self.root == None: # Check if tree is empty, and create the virtual node that we will be shared between whole tree
             virNode = AVLNode(None, None)
             self.root = newNode
             newNode.left = virNode
             newNode.right = virNode
             newNode.parent = None
+            newNode.successor=virNode
+            newNode.predeccessor=virNode
+            virNode.successor=newNode
+            virNode.predeccessor=newNode
             return newNode, height_change
         else: # Tree has nodes, traverse until finding the proper placement for node and add it as a leaf
             node = self.root
@@ -159,7 +167,7 @@ class AVLTree(object):
     """
     def update_height(self, node):
         height_changed = 0
-        while node is not None:
+        while node != None:
             new_height = 1 + max(node.left.height, node.right.height)  # Calculate new height based on children heights
             if new_height != node.height:  # If the height has changed
                 height_changed +=1
@@ -173,7 +181,7 @@ class AVLTree(object):
     def update_size(self, node,):
         curr_node = node
 
-        while curr_node:
+        while curr_node != None:
             curr_node.size = curr_node.left.size + curr_node.right.size + 1
             curr_node = curr_node.parent
             
@@ -182,14 +190,22 @@ class AVLTree(object):
     """
 
     def update_successor(self, node):
-        curr=node #pointer for traveling on the tree
+        curr=node #pointer for traveling on the tree and look for predecessor (assuming node is leaf)
         while curr.parent != None: #go up while you are not the root
-            if curr.parent.right == curr: #if you turn left (while going up) stop and update the pointers
-                node.successor = curr.parent.successor
-                curr.parent.successor = node
-                return
+            if curr.parent.right == curr: #if you turn left (while going up) the parent is the predeccessor
+                pre=curr.parent #pre is the predecessor
+                pro=pre.successor   #pro is the successor
+                break
             curr = curr.parent
-        node.successor=node.parent #if root was reached without turning left it means that you are the minimum
+        if curr.parent == None:      #if root was reached without turning left it means that you are the minimum
+            pro=node.parent
+            pr=pro.predeccessor
+        
+        pre.successor=node    #push node between pre and pro          
+        node.successor=pro
+        pro.predeccessor=node
+        node.predeccessor=pre
+
         return
     """find_criminal receives a pointer to the newly added node,
         searches for a criminal node in the tree, BF >= 1 or BF <= -1, and returns a pointer to the node.
@@ -339,14 +355,11 @@ class AVLTree(object):
                     node.parent.left = node.left
             return node.parent
         
-        def update_successor_for_deletions(node):
-            curr=node #pointer for traveling on the tree
-            while curr.parent != None: #go up while you are not the root
-                if curr.parent.right == curr: #if you turn left (while going up) stop and update the pointers
-                    curr.parent.successor=curr.successor
-                    return
-                curr = curr.parent
-            return #if root was reached without turning left it means that you are the minimum so do nothing
+        def update_successor_for_deletions(node): #bridge over troubled node 
+            pre=node.predeccessor
+            pro=node.successor
+            pre.successor=pro
+            pro.predeccessor=pre
 
         def naive_delete(self, node):
             if node.left.is_virtual_node() or node.right.is_virtual_node(): 
@@ -357,6 +370,7 @@ class AVLTree(object):
                 fixNode = delete_one_or_zero(self, succ)
                 succ.left = node.left
                 succ.right = node.right
+                succ.parent=node.parent
                 node.left.parent = succ #might cause virtual node to have parents, but doesnt matter
                 node.right.parent = succ
                 
@@ -367,11 +381,13 @@ class AVLTree(object):
                 elif node.parent.left == node:
                     node.parent.left = succ
             return fixNode 
-        
+        if self.search(node.key) == None:
+            raise AssertionError(f"Node {node.key} doesnt exists in the AVL tree.")
         update_successor_for_deletions(node)
         fixNode=naive_delete(self,node)
         self.update_height(fixNode) 
         self.update_size(fixNode) 
+ 
 
 
 
@@ -444,7 +460,7 @@ class AVLTree(object):
     def select(self, i):
         def selectRec(node,i):
             n=node.left.size                           #assuming size of a virtual node is 0         
-            #print(n)
+            
             if n>=i:                                    #means the left son has at least i nodes
                 return selectRec(node.left, i)         #go search the i'th in the left branch
             
