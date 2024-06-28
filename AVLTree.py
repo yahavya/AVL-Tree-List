@@ -170,7 +170,7 @@ class AVLTree(object):
     """update_size receives a pointer to the newly added node
         updates all sizes in its path to the root.
     """
-    def update_size(self, node):
+    def update_size(self, node,):
         curr_node = node
 
         while curr_node:
@@ -318,7 +318,6 @@ class AVLTree(object):
                 return self.root #this is the first node that its size/height might change so we return it for future fixation
 
             elif node.parent.right == node: #node is not root and it is someone's right child. so make a "baypass"
-                print("node is right child")
                 if node.right.is_real_node():
                     node.parent.right = node.right
                     node.right.parent = node.parent
@@ -330,7 +329,6 @@ class AVLTree(object):
                 
             
             else: #unforunally the same code with node as left child
-                print("node is left child")
                 if node.right.is_real_node():
                     node.parent.left = node.right
                     node.right.parent = node.parent
@@ -340,7 +338,16 @@ class AVLTree(object):
                 else: #node.left is virtual node
                     node.parent.left = node.left
             return node.parent
-                
+        
+        def update_successor_for_deletions(node):
+            curr=node #pointer for traveling on the tree
+            while curr.parent != None: #go up while you are not the root
+                if curr.parent.right == curr: #if you turn left (while going up) stop and update the pointers
+                    curr.parent.successor=curr.successor
+                    return
+                curr = curr.parent
+            return #if root was reached without turning left it means that you are the minimum so do nothing
+
         def naive_delete(self, node):
             if node.left.is_virtual_node() or node.right.is_virtual_node(): 
                 fixNode = delete_one_or_zero(self,node)
@@ -361,10 +368,10 @@ class AVLTree(object):
                     node.parent.left = succ
             return fixNode 
         
-        #update_successor_for_deletions(self,node) to be written
+        update_successor_for_deletions(node)
         fixNode=naive_delete(self,node)
-        #update_height(fixNode) maybe call it inside naive delet
-        #update_size(fixNode) find way to use insertion functions
+        self.update_height(fixNode) 
+        self.update_size(fixNode) 
 
 
 

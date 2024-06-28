@@ -84,16 +84,34 @@ def rightspace(row):
     else:
         return 0
 
+def check_size(node):
+    if node.is_virtual_node:
+        return 0
+    temp=check_size(node.left)+check_size(node.right)+1
+    if temp!= node.size:
+        print("probelm with ", node.key,". size should be ",temp," but its ",node.size)
+    return temp
 
-t=AVLTree()
-t.insert(10,"")
-t.insert(90,"")
-t.insert(35,"")
-# t.insert(10,"")
-# t.insert(10,"")
-# t.insert(10,"")
-printree(t)
-a=t.search(35)
-t.delete(a)
-#t.delete(t.search(3))
-printree(t)
+def check_height(node):
+    if node.is_virtual_node:
+        return -1
+    temp=max(check_size(node.left),check_size(node.right))+1
+    if temp!= node.height:
+        print("probelm with ", node.key,". size should be ",temp," but its ",node.height)
+    return temp
+
+
+T1=AVLTree()
+for i in range(8):
+    T1.insert(i,"")
+    T1.insert(100-i,"")
+for i in range(0,8,3):
+    T1.delete(T1.search(i))
+
+
+
+
+check_size(T1.root)
+check_height(T1.root)
+printree(T1)
+print("completed")
