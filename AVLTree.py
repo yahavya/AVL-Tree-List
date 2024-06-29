@@ -321,94 +321,92 @@ class AVLTree(object):
 	"""
 
     def delete(self, node):
-        def delete_one_or_zero(self,node): #terrible function but it does the job. we have 3 almost identical cases
-            if self.root == node: #if you want to delete the root make your child the root or make the tree empty
-                if node.right.is_real_node():
-                    self.root = node.right
-                    self.root.parent = None
-                    self.root.size -=1     ###update size
-                elif node.left.is_real_node():
-                    self.root = node.left
-                    self.root.parent = None
-                    self.root.size -= 1     ###update size
-                    self.root.height -= 1   ###update height
-                else:
-                    self.root = None
-                return self.root #this is the first node that its size/height might change so we return it for future fixation
-
-            elif node.parent.right == node: #node is not root and it is someone's right child. so make a "baypass"
-                if node.right.is_real_node():
-                    node.parent.right = node.right
-                    node.right.parent = node.parent
-                elif node.left.is_real_node():
-                    node.parent.right = node.left
-                    node.left.parent = node.parent
-                else: #node.left is virtual node
-                    node.parent.right = node.left
-                
-            
-            else: #unforunally the same code with node as left child
-                if node.right.is_real_node():
-                    node.parent.left = node.right
-                    node.right.parent = node.parent
-                elif node.left.is_real_node():
-                    node.parent.left = node.left
-                    node.left.parent = node.parent
-                else: #node.left is virtual node
-                    node.parent.left = node.left
-            temp=node.parent
-            while(temp != None):  ###update size
-                temp.size -= 1
-                temp=temp.parent
-            self.update_height(node)   ###update height
-            return node.parent
+        if node == None or self.search(node.key) == None:
+            raise AssertionError(f"Node {node.key} doesnt exists in the AVL tree.") 
         
-        def update_successor_for_deletions(node): #bridge over troubled node 
-            pre=node.predeccessor
-            pro=node.successor
-            pre.successor=pro
-            pro.predeccessor=pre
-        
-
-        def naive_delete(self, node):
-            if node.left.is_virtual_node() or node.right.is_virtual_node(): 
-                fixNode = delete_one_or_zero(self,node)
-
-            else: #node has two children. take out the successor from tree and replace it with node (it has 1/0 children so we can use our function)
-                succ = node.successor
-                fixNode = delete_one_or_zero(self, succ)
-                succ.height=node.height
-                succ.size=node.size
-                succ.left = node.left
-                succ.right = node.right
-                succ.parent=node.parent
-                node.left.parent = succ #might cause virtual node to have parents, but doesnt matter
-                node.right.parent = succ
-                
-                if self.root == node:   #again we have 3 almost identical cases
-                    self.root = succ
-                elif node.parent.right == node:
-                    node.parent.right = succ
-                elif node.parent.left == node:
-                    node.parent.left = succ
-            heightChange=self.update_height(fixNode) #  MUST BE CHANGED!!!!!!!
-            return fixNode,heightChange
-        
-        
-        
-        if self.search(node.key) == None:
-            raise AssertionError(f"Node {node.key} doesnt exists in the AVL tree.")
-        
-        update_successor_for_deletions(node)
-        fixNode,heightChanges=naive_delete(self,node)
-        
+        self.update_successor_for_deletions(node)
+        fixNode,heightChanges=self.naive_delete(node) 
         counter=0
         criminal=self.find_criminal(fixNode)
         while criminal != None:
             self.balance(criminal)
             criminal=self.find_criminal(criminal)
 
+    def delete_one_or_zero(self,node): #terrible function but it does the job. we have 3 almost identical cases
+        if self.root == node: #if you want to delete the root make your child the root or make the tree empty
+            if node.right.is_real_node():
+                self.root = node.right
+                self.root.parent = None
+                #self.root.size -=1     ###update size
+            elif node.left.is_real_node():
+                self.root = node.left
+                self.root.parent = None
+                #self.root.size -= 1     ###update size
+                #self.root.height -= 1   ###update height
+            else:
+                self.root = None
+            return self.root #this is the first node that its size/height might change so we return it for future fixation
+
+        elif node.parent.right == node: #node is not root and it is someone's right child. so make a "baypass"
+            if node.right.is_real_node():
+                node.parent.right = node.right
+                node.right.parent = node.parent
+            elif node.left.is_real_node():
+                node.parent.right = node.left
+                node.left.parent = node.parent
+            else: #node.left is virtual node
+                node.parent.right = node.left
+            
+        
+        else: #unforunally the same code with node as left child
+            if node.right.is_real_node():
+                node.parent.left = node.right
+                node.right.parent = node.parent
+            elif node.left.is_real_node():
+                node.parent.left = node.left
+                node.left.parent = node.parent
+            else: #node.left is virtual node
+                node.parent.left = node.left
+        temp=node.parent
+        # while(temp != None):  ###update size
+        #     temp.size -= 1
+        #     temp=temp.parent
+        # self.update_height(node)   ###update height
+        return node.parent
+        
+    def update_successor_for_deletions(self, node): #bridge over troubled node 
+        pre=node.predeccessor
+        pro=node.successor
+        pre.successor=pro
+        pro.predeccessor=pre
  
+    def naive_delete(self, node):
+        if node.left.is_virtual_node() or node.right.is_virtual_node(): 
+            fixNode = self.delete_one_or_zero(node)
+            heightChange = self.update_height(fixNode)
+            self.update_size(fixNode)
+
+        else: #node has two children. take out the successor from tree and replace it with node (it has 1/0 children so we can use our function)
+            succ = node.successor
+            fixNode = self.delete_one_or_zero(succ)
+            heightChange = self.update_height(fixNode)
+            self.update_size(fixNode)
+            succ.height=node.height
+            succ.size=node.size
+            succ.left = node.left
+            succ.right = node.right
+            succ.parent=node.parent
+            node.left.parent = succ #might cause virtual node to have parents, but doesnt matter
+            node.right.parent = succ
+            
+            if self.root == node:   #again we have 3 almost identical cases
+                self.root = succ
+            elif node.parent.right == node:
+                node.parent.right = succ
+            elif node.parent.left == node:
+                node.parent.left = succ
+        #heightChange=self.update_height(fixNode) #  MUST BE CHANGED!!!!!!!
+        return fixNode,heightChange
 
         
         
