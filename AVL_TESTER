@@ -146,20 +146,26 @@ def visualy_check_maxRange(Tree,a,b):
     node=Tree.max_range(a,b)
     print("max is", node.value, "in node ",node.key)
 
-
+def check_balanced(node):
+    if node.is_virtual_node():
+        return True
+    heightL=node.left.height
+    heightR=node.right.height
+    a = heightL - heightR
+    t = a in (0,1,-1)
+    balanced =  t and check_balanced(node.left) and check_balanced(node.right)
+    if not balanced:
+        print(node.key,"is not balanced")
+    return balanced
 
 T1=AVLTree()
 n=200
 for i in range(n):
     T1.insert(i,"")
     T1.insert((2*n)-i,"")
-
-
 for i in range(0,n,3):
     T1.delete(T1.search(i))
     T1.delete(T1.search((2*n)-i))
-
-
 
 
 T2=AVLTree()
@@ -188,17 +194,58 @@ T3.delete(T3.search(2))
 T3.delete(T3.search(4))
 
 
+T4 = AVLTree() #NOT BALANCED
+T4.insert(2,"")
+vir=T4.root.left
+T4.insert(1,"")
+T4.insert(3,"")
+T4.root.right.right=AVLNode(4,"")
+T4.root.right.left=vir
+T4.root.right.right.right=AVLNode(5,"")
+T4.root.right.right.right.left=vir
+T4.root.right.right.right.right=vir
+T4.root.right.right.left=vir
+T4.update_height(T4.root.right.right.right)
+T4.root.height=3
+T4.root.right.height=2
+T4.root.right.right.height=1
+
+
+
+m=1000
+T5=AVLTree()
+for i in range(m):
+    T5.insert(i,"")
+for i in range(0,m,3):
+    T5.delete(T5.search(i))
+for i in range(m,2*m,2):
+    T5.insert(i,"")
+for i in range(m,2*m,4):
+    T5.delete(T5.search(i))
+
+
+
 
 print("started")
 check_height(T1.root)
 check_height(T2.root)
 check_height(T3.root)
+check_height(T5.root)
 check_size(T1.root)
 check_size(T2.root)
 check_size(T3.root)
+check_size(T5.root)
 check_successor(T1.root, False)
 check_successor(T2.root,False)
 check_successor(T3.root,False)
+check_successor(T5.root,False)
+check_balanced(T1.root)
+check_balanced(T2.root)
+check_balanced(T3.root)
+check_balanced(T5.root)
 print("completed")
 
-visualy_check_maxRange(T3,11,18)
+#visualy_check_maxRange(T3,11,18)
+# check_height(T4.root)
+# check_balanced(T4.root)
+# print("completed")
