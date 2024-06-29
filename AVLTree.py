@@ -178,7 +178,7 @@ class AVLTree(object):
     """update_size receives a pointer to the newly added node
         updates all sizes in its path to the root.
     """
-    def update_size(self, node,):
+    def update_size(self, node):
         curr_node = node
 
         while curr_node != None:
@@ -199,7 +199,7 @@ class AVLTree(object):
             curr = curr.parent
         if curr.parent == None:      #if root was reached without turning left it means that you are the minimum
             pro=node.parent
-            pr=pro.predeccessor
+            pre=pro.predeccessor
         
         pre.successor=node    #push node between pre and pro          
         node.successor=pro
@@ -229,7 +229,7 @@ class AVLTree(object):
         BF = node.left.height - node.right.height #calculate balance factor
         if BF == 2: #tree is left heavy
             leftBF = node.left.left.height - node.left.right.height
-            if leftBF == 1: #left child with balance factor 1, meaning child tree is also left heavy, rotate right to fix
+            if leftBF == 1 or leftBF == 0: #left child with balance factor 1, meaning child tree is also left heavy, rotate right to fix
                 self.rotate_right(node)
                 return 1
 
@@ -244,7 +244,7 @@ class AVLTree(object):
                 self.rotate_right(node.right)
                 self.rotate_left(node)
                 return 2
-            elif rightBF == -1: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
+            elif rightBF == -1 or rightBF == 0: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
                 self.rotate_left(node)
                 return 1
         else: #balance factor is ok, and return is irrelevant
@@ -326,9 +326,12 @@ class AVLTree(object):
                 if node.right.is_real_node():
                     self.root = node.right
                     self.root.parent = None
+                    self.root.size -=1     ###update size
                 elif node.left.is_real_node():
                     self.root = node.left
                     self.root.parent = None
+                    self.root.size -= 1     ###update size
+                    self.root.height -= 1   ###update height
                 else:
                     self.root = None
                 return self.root #this is the first node that its size/height might change so we return it for future fixation
@@ -353,6 +356,11 @@ class AVLTree(object):
                     node.left.parent = node.parent
                 else: #node.left is virtual node
                     node.parent.left = node.left
+            temp=node.parent
+            while(temp != None):  ###update size
+                temp.size -= 1
+                temp=temp.parent
+            self.update_height(node)   ###update height
             return node.parent
         
         def update_successor_for_deletions(node): #bridge over troubled node 
@@ -360,6 +368,7 @@ class AVLTree(object):
             pro=node.successor
             pre.successor=pro
             pro.predeccessor=pre
+        
 
         def naive_delete(self, node):
             if node.left.is_virtual_node() or node.right.is_virtual_node(): 
@@ -368,6 +377,8 @@ class AVLTree(object):
             else: #node has two children. take out the successor from tree and replace it with node (it has 1/0 children so we can use our function)
                 succ = node.successor
                 fixNode = delete_one_or_zero(self, succ)
+                succ.height=node.height
+                succ.size=node.size
                 succ.left = node.left
                 succ.right = node.right
                 succ.parent=node.parent
@@ -380,13 +391,27 @@ class AVLTree(object):
                     node.parent.right = succ
                 elif node.parent.left == node:
                     node.parent.left = succ
-            return fixNode 
+            heightChange=self.update_height(fixNode) #  MUST BE CHANGED!!!!!!!
+            return fixNode,heightChange
+        
+        
+        
         if self.search(node.key) == None:
             raise AssertionError(f"Node {node.key} doesnt exists in the AVL tree.")
+        
         update_successor_for_deletions(node)
-        fixNode=naive_delete(self,node)
-        self.update_height(fixNode) 
-        self.update_size(fixNode) 
+        fixNode,heightChanges=naive_delete(self,node)
+        
+        counter=0
+        criminal=self.find_criminal(fixNode)
+        while criminal != None:
+            self.balance(criminal)
+            criminal=self.find_criminal(criminal)
+
+ 
+
+        
+        
  
 
 

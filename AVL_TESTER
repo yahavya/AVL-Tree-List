@@ -85,25 +85,22 @@ def rightspace(row):
         return 0
 
 def check_size(node):
-    if node.is_virtual_node:
+    if node.is_virtual_node():
         return 0
     temp=check_size(node.left)+check_size(node.right)+1
     if temp!= node.size:
         print("probelm with ", node.key,". size should be ",temp," but its ",node.size)
-    else:
-        if p:
-            print("the height of the node with key:", node.key," is",temp)
+
     return temp
 
-def check_height(node, p=False):
-    if node.is_virtual_node:
+def check_height(node):
+    if node.is_virtual_node():
         return -1
-    temp=max(check_size(node.left),check_size(node.right))+1
+    temp=max(check_height(node.left),check_height(node.right))+1
     if temp!= node.height:
-        print("probelm with ", node.key,". size should be ",temp," but its ",node.height)
-    else:
-        if p:
-            print("the height of the node with key:", node.key," is",temp)
+        print("probelm with ", node.key,". height should be ",temp," but its ",node.height)
+    #else:
+     #   print("the height of the node with key:", node.key," is",temp)
     return temp
 
 def get_successor(node):
@@ -146,29 +143,52 @@ def check_successor(node, p = False):
 
 
 
-# for i in range(0,15,3):
-#     print(i," ",100-i)
-
 
 T1=AVLTree()
-for i in range(10):
+n=200
+for i in range(n):
     T1.insert(i,"")
-    T1.insert(100-i,"")
+    T1.insert((2*n)-i,"")
 
-for i in range(0,10,3):
-   T1.delete(T1.search(i))
-   T1.delete(T1.search(100-i))
+
+for i in range(0,n,3):
+    T1.delete(T1.search(i))
+    T1.delete(T1.search((2*n)-i))
+
+
 
 
 T2=AVLTree()
-for i in range (100):
+for i in range (n):
     T2.insert(i,"")
+
+
+T3=AVLTree()
+T3.insert(15,"")
+T3.insert(8,"")
+T3.insert(22,"")
+T3.insert(4,"")
+T3.insert(11,"")
+T3.insert(20,"")
+T3.insert(24,"")
+T3.insert(2,"")
+T3.insert(9,"")
+T3.insert(12,"")
+T3.insert(18,"")
+T3.insert(13,"")
+T3.delete(T3.search(24))
+
+
 
 print("started")
 check_height(T1.root)
 check_height(T2.root)
+check_height(T3.root)
 check_size(T1.root)
 check_size(T2.root)
+check_size(T3.root)
 check_successor(T1.root, False)
-check_successor(T2.root)
+check_successor(T2.root,False)
+check_successor(T3.root,False)
+
 print("completed")
