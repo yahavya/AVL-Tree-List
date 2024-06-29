@@ -139,7 +139,13 @@ def check_successor(node, p = False):
             print("probelm with successor of ", node.key,". successor shold be", realSucc.key," but its", maybeSucc.key)
             return
         node=maybeSucc
-   
+
+def visualy_check_maxRange(Tree,a,b):
+    lst = Tree.avl_to_array()
+    print(' '.join(map(str, lst)))
+    node=Tree.max_range(a,b)
+    print("max is", node.value, "in node ",node.key)
+
 
 
 T1=AVLTree()
@@ -162,25 +168,26 @@ for i in range (n):
 
 
 T3=AVLTree()
-T3.insert(15,"")
-T3.insert(8,"")
-T3.insert(22,"")
+T3.insert(15,"a")
+T3.insert(8,"a")
+T3.insert(22,"c")
 T3.insert(4,"")
-T3.insert(11,"")
-T3.insert(20,"")
+T3.insert(11,"d")
+T3.insert(20,"z")
 T3.insert(24,"")
 T3.insert(2,"")
-T3.insert(9,"")
-T3.insert(12,"")
-T3.insert(18,"")
-T3.insert(13,"")
+T3.insert(9,"b")
+T3.insert(12,"e")
+T3.insert(18,"a")
+T3.insert(13,"f")
 T3.delete(T3.search(24))
-T3.insert(10,"")
-T3.insert(11.5,"")
-T3.insert(23,"")
+T3.insert(10,"c")
+T3.insert(11.5,"c")
+T3.insert(23,"g")
 T3.delete(T3.search(2))
 T3.delete(T3.search(4))
-printree(T3)
+
+
 
 print("started")
 check_height(T1.root)
@@ -192,5 +199,6 @@ check_size(T3.root)
 check_successor(T1.root, False)
 check_successor(T2.root,False)
 check_successor(T3.root,False)
-
 print("completed")
+
+visualy_check_maxRange(T3,11,18)
