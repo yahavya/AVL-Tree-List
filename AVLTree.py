@@ -513,7 +513,7 @@ class AVLTree(object):
     def max_range(self, a, b):
         startNode=self.search(a)
         if startNode == None:
-            raise AssertionError(f"Key {a} doesnt exists in the AVL tree.") 
+            raise AssertionError(f"Key {a} doesnt exist in the AVL tree.") 
         maxNode=startNode
         searchingNode = startNode.successor
         while searchingNode.is_real_node() and searchingNode.key <= b:
