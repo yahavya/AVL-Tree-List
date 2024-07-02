@@ -104,17 +104,18 @@ class AVLTree(object):
         if self.search(key)!=None:
             raise AssertionError("Key already exists in the AVL tree.")
                 
-        newNode = self.naive_insert(key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix 
-
-        return self.compute_and_decide(newNode, True)
-
-    def compute_and_decide(self, newNode, isInsert):
+        newNode = self.naive_insert(key, val) #adds new node to its position which may result in criminal, and returns pointer to node before AVL fix 
+        balancingOps = self.compute_and_decide(newNode, True) #returns the number of rebalancing operation due to AVL rebalancing
+        self.root.size = self.root.left.size + self.root.right.size + 1 #update size of the root node after balancing
+        
+        return balancingOps
+    def compute_and_decide(self, newNode, isInsert): #isInsert is a boolean, True for insert, False for delete
 
             curr = newNode # parent of the leaf
             changes = 0
             
             while curr is not None: # haven't reached the root
-                curr.size = curr.left.size + curr.right.size + 1 #update size DOES NOT WORK, NEEDS FIX !
+                curr.size = curr.left.size + curr.right.size + 1
                 new_height = 1 + max(curr.left.height, curr.right.height)  # Calculate new height
                 old_height = curr.height
 
@@ -396,12 +397,6 @@ class AVLTree(object):
                 node.parent.left = succ
         #heightChange=self.update_height(fixNode) #  MUST BE CHANGED!!!!!!!
         return fixNode,heightChange
-
-        
-        
- 
-
-
 
     """returns an array representing dictionary 
 
