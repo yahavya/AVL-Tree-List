@@ -92,22 +92,38 @@ def rightspace(row):
 t = AVLTree()
 
 
-for i in range(3):
-    print("changes", t.insert(i, "i"))
-    printree(t)
-    print()
+# for i in range(10):
+#     print("changes", t.insert(i, "i"))
+#     printree(t)
+#     print()
+
+printree(t)
+print(t.insertAtMax(4, "a"))
+printree(t)
+print(t.insertAtMax(3, "a"))
+printree(t)
+print(t.insertAtMax(2, "a"))
+printree(t)
+print(t.insertAtMax(1, "a"))
+printree(t)
 
 
 
+# for i in range(1,21):
+#     t.insert(i, "i")
 
-def check_height(node):
-    if node.is_virtual_node():
-        return -1
+# for i in range(1,21):
+#     print(t.rank(t.search(i))) 
+
+
+# def check_height(node):
+#     if node.is_virtual_node():
+#         return -1
     
-    height = 1 + max(check_height(node.left), check_height(node.right))
-    if height != node.height:
-        print("KEY IS", node.key, "WRONG HEIGHT IS", node.height)
-    return height   
+#     height = 1 + max(check_height(node.left), check_height(node.right))
+#     if height != node.height:
+#         print("KEY IS", node.key, "WRONG HEIGHT IS", node.height)
+#     return height   
 
 def check_size(node):
     if node.is_virtual_node():
@@ -116,17 +132,28 @@ def check_size(node):
     size = 1 + check_size(node.left) + check_size(node.right)
     if size != node.size:
         print("KEY IS", node.key, "WRONG SIZE IS", node.size)
-    return size 
-            
+    return size
+
+def check_height(node):
+    if node.is_virtual_node():
+        return -1
+    temp=max(check_height(node.left),check_height(node.right))+1
+    if temp!= node.height:
+        print("probelm with ", node.key,". height should be ",temp," but its ",node.height)
+    #else:
+     #   print("the height of the node with key:", node.key," is",temp)
+    return temp
+
 #t.delete(t.search(5))
-check_height(t.root)
-check_size(t.root)
-print(t.root.height)
-print(t.root.size)
-printree(t)
-print("left side size", t.root.left.size)
-print("right side size",t.root.right.size)
-printree(t)
+# check_height(t.root)
+# check_size(t.root)
+# print(t.root.height)
+# print(t.root.size)
+# printree(t)
+# print("left side size", t.root.left.size)
+# print("right side size",t.root.right.size)
+# print("root size",t.root.size)
+# printree(t)
 
 
 

@@ -57,6 +57,7 @@ class AVLTree(object):
 
     def __init__(self):
         self.root = None
+        self.max = self.root
 
     """searches for a node in the dictionary corresponding to the key
 
@@ -108,6 +109,7 @@ class AVLTree(object):
             curr_node.size = curr_node.left.size + curr_node.right.size + 1
             curr_node = curr_node.parent
 
+    
     def insert(self, key, val):
         if self.search(key)!=None:
             raise AssertionError("Key already exists in the AVL tree.")
@@ -123,7 +125,8 @@ class AVLTree(object):
             changes = 0
             
             while curr is not None: # haven't reached the root
-                curr.size = curr.left.size + curr.right.size + 1
+                curr.size = curr.left.size + curr.right.size + 1 #check if we need this at all
+                
                 new_height = 1 + max(curr.left.height, curr.right.height)  # Calculate new height
                 old_height = curr.height
 
@@ -451,18 +454,21 @@ class AVLTree(object):
 	"""
 
     # If we go up to the right, don't do anything
+    
     def rank(self, node):
-        counter = 0
-        curr = node
-        while curr.parent != None:  # Keep going up to the root
-            if curr.parent.key < curr.key:
-                counter += (
-                    1 + curr.parent.left.size
-                )  # If we go up to the left, add parent's left sub-tree + 1 to the counter
-            curr = curr.parent
-        counter += 1 + curr.left.size
-        return counter
+        rank = 0
+        curr = self.root
 
+        while curr.key != node.key:
+            if curr.key < node.key:
+                rank += 1 + curr.left.size
+                curr = curr.right
+            else:
+                curr = curr.left
+
+        return rank + 1 + curr.left.size
+
+    
     """finds the i'th smallest item (according to keys) in the dictionary
 
 	@type i: int
@@ -522,3 +528,80 @@ class AVLTree(object):
 
     def get_root(self):
         return self.root
+
+########################################## INSERTATMAX FOR THEORY ##########################################
+    def insertAtMax(self, key, val):
+            
+            newNode=AVLNode(key,val)
+            newNode.size=1
+            newNode.height = 0
+            virNode = AVLNode(None, None)
+            newNode.left = virNode
+            newNode.right = virNode
+            
+            
+            if self.root == None: # Check if tree is empty, and create the virtual node that we will be shared between whole tree
+                self.root = newNode
+                newNode.parent = None 
+                self.max = newNode
+                return 0 , 0 , newNode.key - 1
+
+            steps = 0
+            curr = self.max
+            changes = 0 # number of rebalancing operations due to AVL rebalancing
+            switches = 0 # curr.key - curr.rank
+
+
+            if newNode.key > self.max.key:
+                steps = 1 #fix
+                self.max.right = newNode
+                newNode.parent = self.max
+                self.max = newNode
+                self.update_size(self.max)
+                #changes += 
+                # += #send to compute_and_decide
+
+            else:
+                while curr.parent is not None and newNode.key < curr.parent.key:
+                    curr = curr.parent
+                    steps+=1
+
+                node = curr
+
+                while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
+                    if node.key<key:
+                        node=node.right
+                        steps+=1
+                    elif node.key>key:
+                        node=node.left
+                        steps+=1
+                if node.key>key and (node.left.is_virtual_node()): # Left - Place node in correct location and define virtual node as children
+                    virtualNode = node.left
+                    node.left = newNode
+                    newNode.left = virtualNode
+                    newNode.right = virtualNode 
+                    newNode.parent = node
+                    steps+=1
+
+                elif node.key<key and (node.right.is_virtual_node()): # Right - Place node in correct location and define virtual node as children
+                    virtual_node=node.right
+                    node.right=newNode
+                    steps+=1
+                    
+                    newNode.left=virtual_node
+                    newNode.right=virtual_node
+                    newNode.parent=node
+
+            # for everyone
+            self.update_size(newNode)
+            changes = self.compute_and_decide(newNode.parent, True)
+            switches = newNode.key - self.rank(newNode)
+
+                
+            return (changes, steps, switches)
+        
+
+            # calculate current rank
+            # count for how many steps
+            # rotate
+            # update_size after insertion
