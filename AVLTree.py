@@ -98,33 +98,71 @@ class AVLTree(object):
 	@rtype: int
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
+    
 
     def insert(self, key, val):
         if self.search(key)!=None:
             raise AssertionError("Key already exists in the AVL tree.")
-           
-        ######## OUTSIDE OF HELPER FUNCTIONS, BACK IN INSERT FUNCTION ########
-        
-        newNode, height_change = self.naive_insert(key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix, and the change in height due to adding the node
-        #update_successor(newNode) 
-        criminalNode = self.find_criminal(newNode) #find criminal node in tree if exists
-        if criminalNode != None: #if criminal node is found, rebalance tree
-            return self.balance(criminalNode)
-        else: 
-            return height_change #else return 0, no rebalancing needed
+                
+        newNode = self.naive_insert(key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix 
 
+        return self.compute_and_decide(newNode)
 
-        """
-        naive_insert creates a new node with the key, val parameters 
-        and inserts it into the BST placement, without rebalancing
-        returns pointer to the added node, for further use (finding criminal, balancing, etc)
-        """
+    def compute_and_decide(self, newNode):
+
+            curr = newNode # parent of the leaf
+            changes = 0
+            
+            while curr is not None: # haven't reached the root
+
+                new_height = 1 + max(curr.left.height, curr.right.height)  # Calculate new height
+                old_height = curr.height
+
+                BF = curr.left.height - curr.right.height # calculate balance factor
+                
+                if abs(BF) < 2:
+                    if new_height == old_height:
+                        return changes
+                    else:
+                        curr.height = new_height
+                        changes += 1
+                        curr = curr.parent
+                
+                elif BF == 2: #tree is left heavy
+                    leftBF = curr.left.left.height - curr.left.right.height
+                    if leftBF == 1 or leftBF == 0: #left child with balance factor 1, meaning child tree is also left heavy, rotate right to fix
+                        self.rotate_right(curr)
+                        return 1 + changes
+
+                    elif leftBF == -1: #left child with balance factor -1, meaning child tree is right heavy, rotate left then right to fix
+                        self.rotate_left(curr.left)
+                        self.rotate_right(curr)
+                        return 2 + changes
+
+                elif BF == -2: #tree is right heavy
+                    rightBF = curr.right.left.height - curr.right.right.height
+                    if rightBF == 1: #right child with balance factor 1, meaning child tree is left heavy, rotate right then left to fix
+                        self.rotate_right(curr.right)
+                        self.rotate_left(curr)
+                        return 2 + changes
+                    
+                    elif rightBF == -1 or rightBF == 0: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
+                        self.rotate_left(curr)
+                        return 1 + changes
+                    
+            return changes
+
+    """
+    naive_insert creates a new node with the key, val parameters 
+    and inserts it into the BST placement, without rebalancing
+    returns pointer to the added node, for further use (finding criminal, balancing, etc)
+    """
 
     def naive_insert(self, key, val):
         newNode=AVLNode(key,val)
         newNode.size=1
         newNode.height = 0
-        height_change = 0
+        
         if self.root == None: # Check if tree is empty, and create the virtual node that we will be shared between whole tree
             virNode = AVLNode(None, None)
             self.root = newNode
@@ -135,9 +173,10 @@ class AVLTree(object):
             newNode.predeccessor=virNode
             virNode.successor=newNode
             virNode.predeccessor=newNode
-            return newNode, height_change
+
+            return newNode
         else: # Tree has nodes, traverse until finding the proper placement for node and add it as a leaf
-            node = self.root
+            node = self.root #root = 0
             while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
                 if node.key<key:
                     node=node.right
@@ -152,16 +191,19 @@ class AVLTree(object):
             elif node.key<key and (node.right.is_virtual_node()): # Right - Place node in correct location and define virtual node as children
                 virtual_node=node.right
                 node.right=newNode
+                
                 newNode.left=virtual_node
                 newNode.right=virtual_node
                 newNode.parent=node
 
-            height_change = self.update_height(node) #calculate change in height due to adding the node
-            self.update_size(newNode)
-            self.update_successor(newNode)
-
-            return node, height_change #return a tuple - pointer to the new node, and the change in height due to adding the node
+            # height_change = self.update_height(node) #calculate change in height due to adding the node
+            # self.update_size(newNode)
+            # self.update_successor(newNode)
         
+            return node #return a pointer to the new node parent
+
+
+   
     """update_height receives a pointer to the newly added node
         updates all heights in its path to the root.
     """
@@ -223,6 +265,7 @@ class AVLTree(object):
     returns the number of rebalancing operations required to balance the tree.
     """
     def balance(self, node):
+        
         if node == None:
             return
         #node is real
