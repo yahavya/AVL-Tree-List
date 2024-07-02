@@ -321,7 +321,9 @@ class AVLTree(object):
         B.parent = A
         B.size = B.right.size + B.left.size + 1 #update size for B
         A.size = A.right.size + A.left.size + 1 #update size for A
-        self.update_height(B) #change to update height only for B and A manually
+        B.height = 1 + max(B.left.height, B.right.height)
+        A.height = 1 + max(A.left.height, A.right.height)
+        #self.update_height(B) #change to update height only for B and A manually
         return
     
     """
@@ -350,7 +352,9 @@ class AVLTree(object):
         B.parent = A
         B.size = B.right.size + B.left.size + 1 #update size for B
         A.size = A.right.size + A.left.size + 1 #update size for A
-        self.update_height(B) #update height for B and potentially all nodes above it
+        B.height = 1 + max(B.left.height, B.right.height) #update height for B
+        A.height = 1 + max(A.left.height, A.right.height) #update height for A
+        #self.update_height(B) #update height for B and potentially all nodes above it
         return
         
 
