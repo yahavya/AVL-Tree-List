@@ -98,7 +98,15 @@ class AVLTree(object):
 	@rtype: int
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
-    
+    """update_size receives a pointer to the newly added node
+        updates all sizes in its path to the root.
+    """
+    def update_size(self, node):
+        curr_node = node
+
+        while curr_node != None:
+            curr_node.size = curr_node.left.size + curr_node.right.size + 1
+            curr_node = curr_node.parent
 
     def insert(self, key, val):
         if self.search(key)!=None:
@@ -106,7 +114,7 @@ class AVLTree(object):
                 
         newNode = self.naive_insert(key, val) #adds new node to its position which may result in criminal, and returns pointer to node before AVL fix 
         balancingOps = self.compute_and_decide(newNode, True) #returns the number of rebalancing operation due to AVL rebalancing
-        self.root.size = self.root.left.size + self.root.right.size + 1 #update size of the root node after balancing
+        self.update_size(newNode)
         
         return balancingOps
     def compute_and_decide(self, newNode, isInsert): #isInsert is a boolean, True for insert, False for delete
