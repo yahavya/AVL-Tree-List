@@ -92,48 +92,13 @@ def rightspace(row):
 t = AVLTree()
 
 
-# for i in range(1,11):
-#     t.insert(i, "i")
-#     printree(t)
-#     print()
+for i in range(3):
+    print("changes", t.insert(i, "i"))
+    printree(t)
+    print()
 
-# t.insert(5, "10")
-# # printree(t)
-# t.insert(4, "")
-# #print(t.root.height)
-# # printree(t)
-# t.insert(6, "")
-# #print(t.root.height)
-# # printree(t)
 
-print("this is what came from t.insert 10", t.insert(10, ""))
 
-#print("after 5", t.root.height)
-# printree(t)
-print("this is what came from t.insert 92", t.insert(92, ""))
-# #print("after 1", t.root.height)
-
-print("this is what came from t.insert 35", t.insert(35, ""))
-print("this is what came from t.insert 5", t.insert(5, ""))
-print("this is what came from t.insert 1", t.insert(1, ""))
-
-printree(t)
-# t.insert(20, "10")
-# # # printree(t)
-# print(t.insert(40, ""))
-# # # printree(t)
-# t.insert(21, "10")
-# # # printree(t)
-# t.insert(22, "10")
-# t.insert(11,"")
-# t.insert(10.5,"")
-
-# printree(t)
-# #t.delete(t.search(5))
-# print()
-# printree(t)
-# print("this is what came from t.insert", t.insert(3, ""))
-#print(t.root.height)
 
 def check_height(node):
     if node.is_virtual_node():
@@ -153,7 +118,6 @@ def check_size(node):
         print("KEY IS", node.key, "WRONG SIZE IS", node.size)
     return size 
             
-t.insert(2, "")
 #t.delete(t.search(5))
 check_height(t.root)
 check_size(t.root)

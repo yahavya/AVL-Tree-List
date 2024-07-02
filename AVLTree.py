@@ -106,9 +106,9 @@ class AVLTree(object):
                 
         newNode = self.naive_insert(key, val) #naive_insert adds new node to its position which may result in criminal, and returns pointer to it before AVL fix 
 
-        return self.compute_and_decide(newNode)
+        return self.compute_and_decide(newNode, True)
 
-    def compute_and_decide(self, newNode):
+    def compute_and_decide(self, newNode, isInsert):
 
             curr = newNode # parent of the leaf
             changes = 0
@@ -132,23 +132,39 @@ class AVLTree(object):
                     leftBF = curr.left.left.height - curr.left.right.height
                     if leftBF == 1 or leftBF == 0: #left child with balance factor 1, meaning child tree is also left heavy, rotate right to fix
                         self.rotate_right(curr)
-                        return 1 + changes
+                        if isInsert:
+                            return 1 + changes
+                        else:
+                            #add code for delete
+                            pass
 
                     elif leftBF == -1: #left child with balance factor -1, meaning child tree is right heavy, rotate left then right to fix
                         self.rotate_left(curr.left)
                         self.rotate_right(curr)
-                        return 2 + changes
-
+                        if isInsert:
+                            return 2 + changes
+                        else:
+                            #add code for delete
+                            pass
+                      
                 elif BF == -2: #tree is right heavy
                     rightBF = curr.right.left.height - curr.right.right.height
                     if rightBF == 1: #right child with balance factor 1, meaning child tree is left heavy, rotate right then left to fix
                         self.rotate_right(curr.right)
                         self.rotate_left(curr)
-                        return 2 + changes
+                        if isInsert:
+                            return 2 + changes
+                        else:
+                            #add code for delete
+                            pass
                     
                     elif rightBF == -1 or rightBF == 0: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
                         self.rotate_left(curr)
-                        return 1 + changes
+                        if isInsert:
+                            return 1 + changes
+                        else:
+                            #add code for delete
+                            pass
 
             return changes
 
