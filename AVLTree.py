@@ -143,12 +143,12 @@ class AVLTree(object):
             raise AssertionError("Key already exists in the AVL tree.")
                 
         newNode = self.naive_insert(key, val) #adds new node to its position which may result in criminal, and returns pointer to node before AVL fix 
-        balancingOps = self.compute_and_decide(newNode, True) #returns the number of rebalancing operation due to AVL rebalancing
+        balancingOps = self.balance(newNode, True) #returns the number of rebalancing operation due to AVL rebalancing
         self.update_size(newNode)
         
         return balancingOps
     
-    def compute_and_decide(self, newNode, isInsert): #isInsert is a boolean, True for insert, False for delete
+    def balance(self, newNode, isInsert): #isInsert is a boolean, True for insert, False for delete
 
             curr = newNode # parent of the leaf
             changes = 0
@@ -353,7 +353,7 @@ class AVLTree(object):
         
         self.update_successor_for_deletions(node)      #remove the node from the successor/predecessor hirerchy
         fixNode = self.naive_delete(node,P)   #remove the node or its successor from the pointers hirerchy. returns the node for fixation
-        balance_actions = self.compute_and_decide(fixNode, False) #send the parent for fixation. False = delete case
+        balance_actions = self.balance(fixNode, False) #send the parent for fixation. False = delete case
         self.update_size(fixNode) #update the size
         return balance_actions
 
@@ -587,7 +587,7 @@ class AVLTree(object):
                 self.max = newNode
                 self.update_size(self.max)
                 #changes += 
-                # += #send to compute_and_decide
+                # += #send to balance
 
             else:
                 while curr.parent is not None and newNode.key < curr.parent.key:
@@ -622,7 +622,7 @@ class AVLTree(object):
 
             # for everyone
             self.update_size(newNode)
-            changes = self.compute_and_decide(newNode.parent, True)
+            changes = self.balance(newNode.parent, True)
             switches = newNode.key - self.rank(newNode)
 
                 
