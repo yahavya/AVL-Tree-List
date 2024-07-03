@@ -42,6 +42,34 @@ class AVLNode(object):
         if self.value == None:
             return True
         return False
+    
+    # # Add getters for all fields
+    # def get_key(self):
+    #     return self.key
+
+    # def get_value(self):
+    #     return self.value
+
+    # def get_left(self):
+    #     return self.left
+
+    # def get_right(self):
+    #     return self.right
+
+    # def get_parent(self):
+    #     return self.parent
+
+    # def get_height(self):
+    #     return self.height
+
+    # def get_size(self):
+    #     return self.size
+
+    # def get_successor(self):
+    #     return self.successor
+
+    # def get_predecessor(self):
+    #     return self.predecessor
 
 
 """
@@ -164,7 +192,7 @@ class AVLTree(object):
                         self.rotate_left(curr)
                         changes += 2
                         if isInsert:
-                            return 2 + changes
+                            return changes
                         
 
                     
@@ -172,7 +200,7 @@ class AVLTree(object):
                         changes += 1
                         self.rotate_left(curr)
                         if isInsert:
-                            return 1 + changes
+                            return changes
                         
                 curr=next                    
 
@@ -421,6 +449,8 @@ class AVLTree(object):
         """
 
         def avl_to_arrayRec(node, lst):
+            if node is None:
+                return lst
             if node.is_virtual_node():
                 return lst
             avl_to_arrayRec(node.left, lst)
