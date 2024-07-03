@@ -119,14 +119,15 @@ class AVLTree(object):
         self.update_size(newNode)
         
         return balancingOps
+    
     def compute_and_decide(self, newNode, isInsert): #isInsert is a boolean, True for insert, False for delete
 
             curr = newNode # parent of the leaf
             changes = 0
             
             while curr is not None: # haven't reached the root
-                curr.size = curr.left.size + curr.right.size + 1 #check if we need this at all
-                
+                #curr.size = curr.left.size + curr.right.size + 1 #check if we need this at all
+                next = curr.parent
                 new_height = 1 + max(curr.left.height, curr.right.height)  # Calculate new height
                 old_height = curr.height
 
@@ -138,45 +139,42 @@ class AVLTree(object):
                     else:
                         curr.height = new_height
                         changes += 1
-                        curr = curr.parent
                 
                 elif BF == 2: #tree is left heavy
                     leftBF = curr.left.left.height - curr.left.right.height
                     if leftBF == 1 or leftBF == 0: #left child with balance factor 1, meaning child tree is also left heavy, rotate right to fix
                         self.rotate_right(curr)
+                        changes += 1
                         if isInsert:
-                            return 1 + changes
-                        else:
-                            #add code for delete
-                            pass
+                            return changes
+                        
 
                     elif leftBF == -1: #left child with balance factor -1, meaning child tree is right heavy, rotate left then right to fix
                         self.rotate_left(curr.left)
                         self.rotate_right(curr)
+                        changes += 2
                         if isInsert:
-                            return 2 + changes
-                        else:
-                            #add code for delete
-                            pass
+                            return changes
+                        
                       
                 elif BF == -2: #tree is right heavy
                     rightBF = curr.right.left.height - curr.right.right.height
                     if rightBF == 1: #right child with balance factor 1, meaning child tree is left heavy, rotate right then left to fix
                         self.rotate_right(curr.right)
                         self.rotate_left(curr)
+                        changes += 2
                         if isInsert:
                             return 2 + changes
-                        else:
-                            #add code for delete
-                            pass
+                        
+
                     
                     elif rightBF == -1 or rightBF == 0: #right child with balance factor -1, meaning child tree is also right heavy, rotate left to fix
+                        changes += 1
                         self.rotate_left(curr)
                         if isInsert:
                             return 1 + changes
-                        else:
-                            #add code for delete
-                            pass
+                        
+                curr=next                    
 
             return changes
 
@@ -223,7 +221,7 @@ class AVLTree(object):
                 newNode.left=virtual_node
                 newNode.right=virtual_node
                 newNode.parent=node
-        
+            self.update_successor(newNode)
             return node #return a pointer to the new node parent
             
     """update_successor receives a pointer to the newly added node
@@ -321,34 +319,35 @@ class AVLTree(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 
-    def delete(self, node):
+    def delete(self, node, P=False):
         if node == None or self.search(node.key) == None:
-            raise AssertionError(f"Node {node.key} doesnt exists in the AVL tree.") 
+            raise AssertionError(f"Node doesnt exists in the AVL tree.") 
         
-        self.update_successor_for_deletions(node)
-        fixNode,heightChanges=self.naive_delete(node) 
-        counter=0
-        criminal=self.find_criminal(fixNode)
-        while criminal != None:
-            self.balance(criminal)
-            criminal=self.find_criminal(criminal)
+        self.update_successor_for_deletions(node)      #remove the node from the successor/predecessor hirerchy
+        fixNode = self.naive_delete(node,P)   #remove the node or its successor from the pointers hirerchy. returns the node for fixation
+        balance_actions = self.compute_and_decide(fixNode, False) #send the parent for fixation. False = delete case
+        self.update_size(fixNode) #update the size
+        return balance_actions
 
-    def delete_one_or_zero(self,node): #terrible function but it does the job. we have 3 almost identical cases
+
+
+    def delete_one_or_zero(self,node,P=False): #terrible function but it does the job. we have 3 almost identical cases
+        if P:
+            print("deleting one or zero", node.key)
+            print(node.left.key)
         if self.root == node: #if you want to delete the root make your child the root or make the tree empty
             if node.right.is_real_node():
                 self.root = node.right
                 self.root.parent = None
-                #self.root.size -=1     ###update size
             elif node.left.is_real_node():
                 self.root = node.left
                 self.root.parent = None
-                #self.root.size -= 1     ###update size
-                #self.root.height -= 1   ###update height
             else:
                 self.root = None
-            return self.root #this is the first node that its size/height might change so we return it for future fixation
 
         elif node.parent.right == node: #node is not root and it is someone's right child. so make a "baypass"
+            if P:
+                print("make bypass from", node.parent.key, "above",node.key)
             if node.right.is_real_node():
                 node.parent.right = node.right
                 node.right.parent = node.parent
@@ -368,12 +367,8 @@ class AVLTree(object):
                 node.left.parent = node.parent
             else: #node.left is virtual node
                 node.parent.left = node.left
-        temp=node.parent
-        # while(temp != None):  ###update size
-        #     temp.size -= 1
-        #     temp=temp.parent
-        # self.update_height(node)   ###update height
-        return node.parent
+
+        return node.parent #this is the first node that its size/height might change so we return it for future fixation
         
     def update_successor_for_deletions(self, node): #bridge over troubled node 
         pre=node.predeccessor
@@ -381,18 +376,20 @@ class AVLTree(object):
         pre.successor=pro
         pro.predeccessor=pre
  
-    def naive_delete(self, node):
-        if node.left.is_virtual_node() or node.right.is_virtual_node(): 
+    def naive_delete(self, node , P=False):
+        if node.left.is_virtual_node() or node.right.is_virtual_node(): #if only one child delete using help function
             fixNode = self.delete_one_or_zero(node)
-            heightChange = self.update_height(fixNode)
-            self.update_size(fixNode)
+            return fixNode
 
         else: #node has two children. take out the successor from tree and replace it with node (it has 1/0 children so we can use our function)
             succ = node.successor
-            fixNode = self.delete_one_or_zero(succ)
-            heightChange = self.update_height(fixNode)
-            self.update_size(fixNode)
-            succ.height=node.height
+            if P:
+                print("succ is",succ.key)
+            fixNode = self.delete_one_or_zero(succ,P)
+            if P:
+                print("we got back",fixNode.key)
+                print("his right child is" , fixNode.right.key)
+            succ.height=node.height #give the successor all the propeties of the deleted node
             succ.size=node.size
             succ.left = node.left
             succ.right = node.right
@@ -400,14 +397,15 @@ class AVLTree(object):
             node.left.parent = succ #might cause virtual node to have parents, but doesnt matter
             node.right.parent = succ
             
-            if self.root == node:   #again we have 3 almost identical cases
+            if self.root == node:   #update the parent of node to point on the successor. again we have 3 almost identical cases
                 self.root = succ
             elif node.parent.right == node:
                 node.parent.right = succ
             elif node.parent.left == node:
                 node.parent.left = succ
-        #heightChange=self.update_height(fixNode) #  MUST BE CHANGED!!!!!!!
-        return fixNode,heightChange
+        if fixNode == node:
+            return succ      
+        return fixNode 
 
     """returns an array representing dictionary 
 

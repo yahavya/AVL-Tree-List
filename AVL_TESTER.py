@@ -157,15 +157,26 @@ def check_balanced(node):
     if not balanced:
         print(node.key,"is not balanced")
     return balanced
+T0=AVLTree()
+for i in range(1):
+    T0.insert(i,"i")
+T0.delete(T0.root)
+
 
 T1=AVLTree()
-n=200
+n=10000
 for i in range(n):
     T1.insert(i,"")
     T1.insert((2*n)-i,"")
 for i in range(0,n,3):
+
     T1.delete(T1.search(i))
     T1.delete(T1.search((2*n)-i))
+
+
+
+
+
 
 
 T2=AVLTree()
@@ -186,7 +197,6 @@ T3.insert(9,"b")
 T3.insert(12,"e")
 T3.insert(18,"a")
 T3.insert(13,"f")
-T3.delete(T3.search(24))
 T3.insert(10,"c")
 T3.insert(11.5,"c")
 T3.insert(23,"g")
@@ -194,25 +204,11 @@ T3.delete(T3.search(2))
 T3.delete(T3.search(4))
 
 
-T4 = AVLTree() #NOT BALANCED
-T4.insert(2,"")
-vir=T4.root.left
-T4.insert(1,"")
-T4.insert(3,"")
-T4.root.right.right=AVLNode(4,"")
-T4.root.right.left=vir
-T4.root.right.right.right=AVLNode(5,"")
-T4.root.right.right.right.left=vir
-T4.root.right.right.right.right=vir
-T4.root.right.right.left=vir
-T4.update_height(T4.root.right.right.right)
-T4.root.height=3
-T4.root.right.height=2
-T4.root.right.right.height=1
 
 
 
-m=1000
+
+m=1000000
 T5=AVLTree()
 for i in range(m):
     T5.insert(i,"")
@@ -222,7 +218,6 @@ for i in range(m,2*m,2):
     T5.insert(i,"")
 for i in range(m,2*m,4):
     T5.delete(T5.search(i))
-
 
 
 
@@ -245,7 +240,5 @@ check_balanced(T3.root)
 check_balanced(T5.root)
 print("completed")
 
-#visualy_check_maxRange(T3,11,18)
-# check_height(T4.root)
-# check_balanced(T4.root)
+# visualy_check_maxRange(T3,11,18)
 # print("completed")
