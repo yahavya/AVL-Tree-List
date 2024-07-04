@@ -127,6 +127,7 @@ class AVLTree(object):
 	@rtype: int
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
+
     """update_size receives a pointer to the newly added node
         updates all sizes in its path to the root.
     """
@@ -539,7 +540,9 @@ class AVLTree(object):
     def max_range(self, a, b):
         startNode=self.search(a)
         if startNode == None:
-            raise AssertionError(f"Key {a} doesnt exist in the AVL tree.") 
+            # add a to the tree
+            self.insert(a, " ")
+            return self.max_range(a,b)
         maxNode=startNode
         searchingNode = startNode.successor
         while searchingNode.is_real_node() and searchingNode.key <= b:
