@@ -539,8 +539,10 @@ class AVLTree(object):
 
     def max_range(self, a, b):
         startNode=self.search(a)
+        a_not_in_tree = False
         if startNode == None:
             # add a to the tree
+            a_not_in_tree = True
             self.insert(a, " ")
             return self.max_range(a,b)
         maxNode=startNode
@@ -549,6 +551,9 @@ class AVLTree(object):
             if searchingNode.value > maxNode.value:
                 maxNode = searchingNode
             searchingNode = searchingNode.successor
+        
+        if a_not_in_tree:
+            self.delete(self.search(a))
         return maxNode
 
     """returns the root of the tree representing the dictionary
