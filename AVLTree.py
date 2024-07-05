@@ -340,7 +340,7 @@ class AVLTree(object):
         
 
 
-    """deletes node from the dictionary
+    """deletes node from the Tree
 
 	@type node: AVLNode
 	@pre: node is a real pointer to a node in self
@@ -348,22 +348,26 @@ class AVLTree(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 
-    def delete(self, node, P=False):
+    def delete(self, node,):
         if node == None or self.search(node.key) == None:
             raise AssertionError(f"Node doesnt exists in the AVL tree.") 
         
         self.update_successor_for_deletions(node)      #remove the node from the successor/predecessor hirerchy
-        fixNode = self.naive_delete(node,P)   #remove the node or its successor from the pointers hirerchy. returns the node for fixation
+        fixNode = self.naive_delete(node)   #remove the node or its successor from the pointers hirerchy. returns the node for fixation
         balance_actions = self.balance(fixNode, False) #send the parent for fixation. False = delete case
         self.update_size(fixNode) #update the size
         return balance_actions
 
 
+    """physically deletes node with 0 or 1 children
 
-    def delete_one_or_zero(self,node,P=False): #terrible function but it does the job. we have 3 almost identical cases
-        if P:
-            print("deleting one or zero", node.key)
-            print(node.left.key)
+	@type node: AVLNode
+	@pre: node is a real pointer to a node in self
+	@rtype: AVLNode
+	@returns: the parent of the physically deleted node 
+	"""
+    def delete_one_or_zero(self,node): #terrible function but it does the job. we have 3 almost identical cases
+        
         if self.root == node: #if you want to delete the root make your child the root or make the tree empty
             if node.right.is_real_node():
                 self.root = node.right
@@ -375,8 +379,6 @@ class AVLTree(object):
                 self.root = None
 
         elif node.parent.right == node: #node is not root and it is someone's right child. so make a "baypass"
-            if P:
-                print("make bypass from", node.parent.key, "above",node.key)
             if node.right.is_real_node():
                 node.parent.right = node.right
                 node.right.parent = node.parent
@@ -398,26 +400,38 @@ class AVLTree(object):
                 node.parent.left = node.left
 
         return node.parent #this is the first node that its size/height might change so we return it for future fixation
-        
+    
+
+
+    """make bridge over the node in terms od successor and predeccessors
+
+	@type node: AVLNode
+	@pre: node is a real pointer to a node in self
+	@returns: 
+	"""
     def update_successor_for_deletions(self, node): #bridge over troubled node 
         pre=node.predeccessor
         pro=node.successor
         pre.successor=pro
         pro.predeccessor=pre
  
-    def naive_delete(self, node , P=False):
+
+
+    """physically deletes node from the Tree using the help function delete_on_or_zero
+
+	@type node: AVLNode
+	@pre: node is a real pointer to a node in self
+	@rtype: AVLNode
+	@returns: the parent of the physically deleted node (node itself or its successor)
+	"""
+    def naive_delete(self, node):
         if node.left.is_virtual_node() or node.right.is_virtual_node(): #if only one child delete using help function
             fixNode = self.delete_one_or_zero(node)
             return fixNode
 
         else: #node has two children. take out the successor from tree and replace it with node (it has 1/0 children so we can use our function)
             succ = node.successor
-            if P:
-                print("succ is",succ.key)
-            fixNode = self.delete_one_or_zero(succ,P)
-            if P:
-                print("we got back",fixNode.key)
-                print("his right child is" , fixNode.right.key)
+            fixNode = self.delete_one_or_zero(succ)
             succ.height=node.height #give the successor all the propeties of the deleted node
             succ.size=node.size
             succ.left = node.left
