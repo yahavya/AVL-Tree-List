@@ -1,8 +1,8 @@
-# username - complete info
-# id1      - complete info
-# name1    - complete info
-# id2      - complete info
-# name2    - complete info
+# username - yarony@mail.tau.ac.il
+# id1      - 322715632
+# name1    - Yaron Yahav
+# id2      - 207865981
+# name2    - Eviatar Weissert
 
 
 """A class represnting a node in an AVL tree"""
@@ -566,78 +566,78 @@ class AVLTree(object):
         return self.root
 
 ########################################## INSERTATMAX FOR THEORY ##########################################
-    def insertAtMax(self, key, val):
+    # def insertAtMax(self, key, val):
             
-            newNode=AVLNode(key,val)
-            newNode.size=1
-            newNode.height = 0
-            virNode = AVLNode(None, None)
-            newNode.left = virNode
-            newNode.right = virNode
+    #         newNode=AVLNode(key,val)
+    #         newNode.size=1
+    #         newNode.height = 0
+    #         virNode = AVLNode(None, None)
+    #         newNode.left = virNode
+    #         newNode.right = virNode
             
             
-            if self.root == None: # Check if tree is empty, and create the virtual node that we will be shared between whole tree
-                self.root = newNode
-                newNode.parent = None 
-                self.max = newNode
-                return 0 , 0 , newNode.key - 1
+    #         if self.root == None: # Check if tree is empty, and create the virtual node that we will be shared between whole tree
+    #             self.root = newNode
+    #             newNode.parent = None 
+    #             self.max = newNode
+    #             return 0 , 0 , newNode.key - 1
 
-            steps = 0
-            curr = self.max
-            changes = 0 # number of rebalancing operations due to AVL rebalancing
-            switches = 0 # curr.key - curr.rank
+    #         steps = 0
+    #         curr = self.max
+    #         changes = 0 # number of rebalancing operations due to AVL rebalancing
+    #         switches = 0 # curr.key - curr.rank
 
 
-            if newNode.key > self.max.key:
-                steps = 1 #fix
-                self.max.right = newNode
-                newNode.parent = self.max
-                self.max = newNode
-                self.update_size(self.max)
-                #changes += 
-                # += #send to balance
+    #         if newNode.key > self.max.key:
+    #             steps = 1 #fix
+    #             self.max.right = newNode
+    #             newNode.parent = self.max
+    #             self.max = newNode
+    #             self.update_size(self.max)
+    #             #changes += 
+    #             # += #send to balance
 
-            else:
-                while curr.parent is not None and newNode.key < curr.parent.key:
-                    curr = curr.parent
-                    steps+=1
+    #         else:
+    #             while curr.parent is not None and newNode.key < curr.parent.key:
+    #                 curr = curr.parent
+    #                 steps+=1
 
-                node = curr
+    #             node = curr
 
-                while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
-                    if node.key<key:
-                        node=node.right
-                        steps+=1
-                    elif node.key>key:
-                        node=node.left
-                        steps+=1
-                if node.key>key and (node.left.is_virtual_node()): # Left - Place node in correct location and define virtual node as children
-                    virtualNode = node.left
-                    node.left = newNode
-                    newNode.left = virtualNode
-                    newNode.right = virtualNode 
-                    newNode.parent = node
-                    steps+=1
+    #             while (node.right.is_real_node() and node.key<key) or ((node.left.is_real_node() and node.key>key)):
+    #                 if node.key<key:
+    #                     node=node.right
+    #                     steps+=1
+    #                 elif node.key>key:
+    #                     node=node.left
+    #                     steps+=1
+    #             if node.key>key and (node.left.is_virtual_node()): # Left - Place node in correct location and define virtual node as children
+    #                 virtualNode = node.left
+    #                 node.left = newNode
+    #                 newNode.left = virtualNode
+    #                 newNode.right = virtualNode 
+    #                 newNode.parent = node
+    #                 steps+=1
 
-                elif node.key<key and (node.right.is_virtual_node()): # Right - Place node in correct location and define virtual node as children
-                    virtual_node=node.right
-                    node.right=newNode
-                    steps+=1
+    #             elif node.key<key and (node.right.is_virtual_node()): # Right - Place node in correct location and define virtual node as children
+    #                 virtual_node=node.right
+    #                 node.right=newNode
+    #                 steps+=1
                     
-                    newNode.left=virtual_node
-                    newNode.right=virtual_node
-                    newNode.parent=node
+    #                 newNode.left=virtual_node
+    #                 newNode.right=virtual_node
+    #                 newNode.parent=node
 
-            # for everyone
-            self.update_size(newNode)
-            changes = self.balance(newNode.parent, True)
-            switches = newNode.key - self.rank(newNode)
+    #         # for everyone
+    #         self.update_size(newNode)
+    #         changes = self.balance(newNode.parent, True)
+    #         switches = newNode.key - self.rank(newNode)
 
                 
-            return (changes, steps, switches)
+    #         return (changes, steps, switches)
         
 
-            # calculate current rank
-            # count for how many steps
-            # rotate
-            # update_size after insertion
+    #         # calculate current rank
+    #         # count for how many steps
+    #         # rotate
+    #         # update_size after insertion
