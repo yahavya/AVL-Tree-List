@@ -140,8 +140,8 @@ class AVLTree(object):
 
     
     def insert(self, key, val):
-        if self.search(key)!=None:
-            raise AssertionError("Key already exists in the AVL tree.")
+        # if self.search(key)!=None:
+        #     raise AssertionError("Key already exists in the AVL tree.")
                 
         newNode = self.naive_insert(key, val) #adds new node to its position which may result in criminal, and returns pointer to node before AVL fix 
         balancingOps = self.balance(newNode, True) #returns the number of rebalancing operation due to AVL rebalancing
@@ -348,9 +348,9 @@ class AVLTree(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 
-    def delete(self, node,):
-        if node == None or self.search(node.key) == None:
-            raise AssertionError(f"Node doesnt exists in the AVL tree.") 
+    def delete(self, node):
+        # if node == None or self.search(node.key) == None:
+        #     raise AssertionError(f"Node doesnt exists in the AVL tree.") 
         
         self.update_successor_for_deletions(node)      #remove the node from the successor/predecessor hirerchy
         fixNode = self.naive_delete(node)   #remove the node or its successor from the pointers hirerchy. returns the node for fixation
