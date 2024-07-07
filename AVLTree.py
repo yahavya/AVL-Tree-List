@@ -389,7 +389,7 @@ class AVLTree(object):
                 node.parent.right = node.left
             
         
-        else: #unforunally the same code with node as left child
+        else: #unfortunately the same code with node as left child
             if node.right.is_real_node():
                 node.parent.left = node.right
                 node.right.parent = node.parent
